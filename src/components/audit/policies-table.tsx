@@ -271,6 +271,7 @@ export const PoliciesTable = ({
             setAuditProgress((prev) => ({ ...prev, [policy.policy_id]: 'processing' }));
             try {
                 const response = await apiClient.parsePolicy(policy.policy_id);
+                console.log(`Audit result for policy ${policy.policy_id}:`, response);
                 results.push({ policy_id: policy.policy_id, success: true, data: response });
                 setAuditProgress((prev) => ({ ...prev, [policy.policy_id]: 'done' }));
             } catch (error) {
