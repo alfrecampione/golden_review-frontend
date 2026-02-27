@@ -120,6 +120,7 @@ export const PoliciesTable = ({
     };
     const [auditResults, setAuditResults] = useState<AuditResult[]>([]);
     const [isAuditing, setIsAuditing] = useState(false);
+    const [auditProgress, setAuditProgress] = useState<{ [policyId: string]: 'processing' | 'done' | 'error' }>({});
 
     // Fetch available users for assignment (only if user has Manager role)
     const { data: usersData } = useQuery({
@@ -257,20 +258,28 @@ export const PoliciesTable = ({
 
         setIsAuditing(true);
         setAuditResults([]);
-        setAuditDialogOpen(true); // Abrir modal inmediatamente con spinner
+        setAuditDialogOpen(true); // Abrir modal inmediatamente
+        // Set initial progress for each policy
+        const progress: { [policyId: string]: 'processing' | 'done' | 'error' } = {};
+        selectedPolicies.forEach((policy) => {
+            progress[policy.policy_id] = 'processing';
+        });
+        setAuditProgress(progress);
 
         const results: AuditResult[] = [];
-        // Enviar uno por uno (secuencial)
         for (const policy of selectedPolicies) {
+            setAuditProgress((prev) => ({ ...prev, [policy.policy_id]: 'processing' }));
             try {
                 const response = await apiClient.parsePolicy(policy.policy_id);
                 results.push({ policy_id: policy.policy_id, success: true, data: response });
+                setAuditProgress((prev) => ({ ...prev, [policy.policy_id]: 'done' }));
             } catch (error) {
                 results.push({
                     policy_id: policy.policy_id,
                     success: false,
                     error: error instanceof Error ? error.message : 'Unknown error',
                 });
+                setAuditProgress((prev) => ({ ...prev, [policy.policy_id]: 'error' }));
             }
         }
         setAuditResults(results);
@@ -672,29 +681,34 @@ export const PoliciesTable = ({
                         <DialogTitle>Audit Results</DialogTitle>
                     </DialogHeader>
                     <div className="overflow-y-auto flex-1 p-2">
-                        {isAuditing ? (
-                            <div className="flex items-center justify-center py-8">
-                                <div className="text-center">
-                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                                    <p className="mt-2 text-muted-foreground">Processing audit...</p>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="space-y-4">
-                                {auditResults.map((result, index) => (
-                                    <div key={index} className="border rounded-lg p-3">
-                                        <div className="font-medium mb-1">Policy ID: {result.policy_id}</div>
-                                        {result.success ? (
-                                            <pre className="text-xs bg-muted p-2 rounded overflow-x-auto">
-                                                {JSON.stringify(result.data, null, 2)}
-                                            </pre>
-                                        ) : (
-                                            <div className="text-destructive">Error: {result.error}</div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                        <div className="space-y-4">
+                            {/* Show progress for each selected policy */}
+                            {Object.keys(auditProgress).length > 0
+                                ? Object.keys(auditProgress).map((policyId) => {
+                                    const progress = auditProgress[policyId];
+                                    const result = auditResults.find(r => r.policy_id === policyId);
+                                    return (
+                                        <div key={policyId} className="border rounded-lg p-3">
+                                            <div className="font-medium mb-1">Policy ID: {policyId}</div>
+                                            {progress === 'processing' && (
+                                                <div className="text-muted-foreground">{policyId} is being processed...</div>
+                                            )}
+                                            {progress === 'done' && result && result.success && (
+                                                <div>
+                                                    <span className="text-success">Done</span>
+                                                    <pre className="text-xs bg-muted p-2 rounded overflow-x-auto">
+                                                        {JSON.stringify(result.data, null, 2)}
+                                                    </pre>
+                                                </div>
+                                            )}
+                                            {progress === 'error' && result && !result.success && (
+                                                <div className="text-destructive">Error: {result.error}</div>
+                                            )}
+                                        </div>
+                                    );
+                                })
+                                : null}
+                        </div>
                     </div>
                     <div className="flex justify-end pt-4 border-t">
                         <Button variant="outline" onClick={() => setAuditDialogOpen(false)}>
