@@ -293,7 +293,7 @@ class ApiClient {
         success: boolean;
         message: string;
     }> {
-        return this.post(`/parse/policy/${policyId}`);
+        return this.get(`/parse/policy/${policyId}`);
     }
 
     /**
