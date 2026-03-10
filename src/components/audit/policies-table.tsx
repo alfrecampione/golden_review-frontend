@@ -120,7 +120,8 @@ export const PoliciesTable = ({
         data?: unknown;
         error?: string;
     };
-    const [auditResults, setAuditResults] = useState<AuditResult[]>([]);
+    // Usamos un Record para almacenar los resultados por policyId
+    const [auditResultsMap, setAuditResultsMap] = useState<Record<string, AuditResult>>({});
     const [isAuditing, setIsAuditing] = useState(false);
 
     // Fetch available users for assignment (only if user has Manager role)
@@ -258,24 +259,46 @@ export const PoliciesTable = ({
         if (selectedPolicies.length === 0) return;
 
         setIsAuditing(true);
-        setAuditResults([]);
-        setAuditDialogOpen(true); // Abrir modal inmediatamente con spinner
+        setAuditResultsMap({}); // Limpiar resultados anteriores
+        setAuditDialogOpen(true);
 
-        const results: AuditResult[] = [];
-        // Enviar uno por uno (secuencial)
+        // Procesar cada póliza secuencialmente
         for (const policy of selectedPolicies) {
+            // Inicializar como "procesando"
+            setAuditResultsMap(prev => ({
+                ...prev,
+                [policy.policy_id]: { policy_id: policy.policy_id, success: false, data: undefined }
+            }));
+
             try {
                 const response = await apiClient.parsePolicy(policy.policy_id);
-                results.push({ policy_id: policy.policy_id, success: true, data: response });
+                console.log(`Audit result for policy ${policy.policy_id}:`, response);
+
+                // Si la respuesta tiene una propiedad 'data' (ej. Axios), úsala; si no, usa la respuesta directamente
+                const responseData = response && typeof response === 'object' && 'data' in response
+                    ? response.data
+                    : response;
+
+                setAuditResultsMap(prev => ({
+                    ...prev,
+                    [policy.policy_id]: {
+                        policy_id: policy.policy_id,
+                        success: true,
+                        data: responseData
+                    }
+                }));
             } catch (error) {
-                results.push({
-                    policy_id: policy.policy_id,
-                    success: false,
-                    error: error instanceof Error ? error.message : 'Unknown error',
-                });
+                setAuditResultsMap(prev => ({
+                    ...prev,
+                    [policy.policy_id]: {
+                        policy_id: policy.policy_id,
+                        success: false,
+                        error: error instanceof Error ? error.message : 'Unknown error'
+                    }
+                }));
             }
         }
-        setAuditResults(results);
+
         setIsAuditing(false);
     };
 
@@ -675,29 +698,31 @@ export const PoliciesTable = ({
                         <DialogTitle>Audit Results</DialogTitle>
                     </DialogHeader>
                     <div className="overflow-y-auto flex-1 p-2">
-                        {isAuditing ? (
-                            <div className="flex items-center justify-center py-8">
-                                <div className="text-center">
-                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                                    <p className="mt-2 text-muted-foreground">Processing audit...</p>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="space-y-4">
-                                {auditResults.map((result, index) => (
-                                    <div key={index} className="border rounded-lg p-3">
+                        <div className="space-y-4">
+                            {Object.keys(auditResultsMap).length > 0 ? (
+                                Object.values(auditResultsMap).map((result) => (
+                                    <div key={result.policy_id} className="border rounded-lg p-3">
                                         <div className="font-medium mb-1">Policy ID: {result.policy_id}</div>
-                                        {result.success ? (
-                                            <pre className="text-xs bg-muted p-2 rounded overflow-x-auto">
-                                                {JSON.stringify(result.data, null, 2)}
-                                            </pre>
-                                        ) : (
+                                        {!result.data && !result.error && (
+                                            <div className="text-muted-foreground">Processing...</div>
+                                        )}
+                                        {result.success && result.data !== undefined && (
+                                            <div>
+                                                <span className="text-success">Done</span>
+                                                <pre className="text-xs bg-muted p-2 rounded overflow-x-auto max-h-96" style={{ maxHeight: '24rem', minHeight: '8rem', whiteSpace: 'pre-wrap' }}>
+                                                    {JSON.stringify(result.data, null, 2)}
+                                                </pre>
+                                            </div>
+                                        )}
+                                        {!result.success && result.error && (
                                             <div className="text-destructive">Error: {result.error}</div>
                                         )}
                                     </div>
-                                ))}
-                            </div>
-                        )}
+                                ))
+                            ) : (
+                                <div className="text-muted-foreground text-center py-4">No policies selected</div>
+                            )}
+                        </div>
                     </div>
                     <div className="flex justify-end pt-4 border-t">
                         <Button variant="outline" onClick={() => setAuditDialogOpen(false)}>
