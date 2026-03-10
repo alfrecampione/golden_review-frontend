@@ -308,21 +308,25 @@ export const PoliciesTable = ({
             {
                 id: 'checkbox',
                 header: ({ table }) => (
-                    <Checkbox
-                        checked={
-                            table.getIsAllPageRowsSelected() ||
-                            (table.getIsSomePageRowsSelected() && 'indeterminate')
-                        }
-                        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                        aria-label="Select all rows"
-                    />
+                    <div onClick={(e) => e.stopPropagation()}>
+                        <Checkbox
+                            checked={
+                                table.getIsAllPageRowsSelected() ||
+                                (table.getIsSomePageRowsSelected() && 'indeterminate')
+                            }
+                            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                            aria-label="Select all rows"
+                        />
+                    </div>
                 ),
                 cell: ({ row }) => (
-                    <Checkbox
-                        checked={row.getIsSelected()}
-                        onCheckedChange={(value) => row.toggleSelected(!!value)}
-                        aria-label="Select row"
-                    />
+                    <div onClick={(e) => e.stopPropagation()}>
+                        <Checkbox
+                            checked={row.getIsSelected()}
+                            onCheckedChange={(value) => row.toggleSelected(!!value)}
+                            aria-label="Select row"
+                        />
+                    </div>
                 ),
                 enableSorting: false,
                 size: 50,
@@ -498,6 +502,9 @@ export const PoliciesTable = ({
                 columnsMovable: true,
                 columnsVisibility: false,
                 cellBorder: true,
+            }}
+            tableClassNames={{
+                bodyRow: 'transition-colors hover:bg-muted/60',
             }}
         >
             <Card className="w-full h-[75vh] flex flex-col overflow-hidden">
