@@ -151,11 +151,9 @@ const PolicyDetailsPage = () => {
                                         <thead>
                                             <tr className="border-b text-left">
                                                 <th className="py-3 px-4 font-medium text-muted-foreground">File Name</th>
-                                                <th className="py-3 px-4 font-medium text-muted-foreground">Category</th>
                                                 <th className="py-3 px-4 font-medium text-muted-foreground">Type</th>
                                                 <th className="py-3 px-4 font-medium text-muted-foreground">Size</th>
                                                 <th className="py-3 px-4 font-medium text-muted-foreground">Created</th>
-                                                <th className="py-3 px-4 font-medium text-muted-foreground">Description</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -171,20 +169,14 @@ const PolicyDetailsPage = () => {
                                                     </td>
                                                     <td className="py-3 px-4">
                                                         <Badge variant="outline" className="text-xs">
-                                                            {file.category || 'Uncategorized'}
+                                                            {file.type}
                                                         </Badge>
-                                                    </td>
-                                                    <td className="py-3 px-4 text-muted-foreground">
-                                                        {file.content_type_final || file.content_type_reported || '-'}
                                                     </td>
                                                     <td className="py-3 px-4 text-muted-foreground">
                                                         {formatFileSize(file.size_final_bytes)}
                                                     </td>
                                                     <td className="py-3 px-4 text-muted-foreground">
                                                         {formatDate(file.created_on)}
-                                                    </td>
-                                                    <td className="py-3 px-4 text-muted-foreground truncate max-w-[200px]">
-                                                        {file.description || '-'}
                                                     </td>
                                                 </tr>
                                             ))}

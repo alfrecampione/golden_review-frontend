@@ -33,15 +33,12 @@ export interface PolicyFile {
     file_id: string;
     contact_id: number;
     file_name_reported: string | null;
-    content_type_reported: string | null;
-    content_type_final: string | null;
     size_reported: number | null;
     size_final_bytes: number | null;
     created_on: string | null;
     modified_on: string | null;
-    category: string | null;
-    description: string | null;
     s3_url: string | null;
+    type: string;
 }
 
 export interface Carrier {
