@@ -29,6 +29,21 @@ export interface Policy {
     assigned_user_email?: string | null;
 }
 
+export interface PolicyFile {
+    file_id: string;
+    contact_id: number;
+    file_name_reported: string | null;
+    content_type_reported: string | null;
+    content_type_final: string | null;
+    size_reported: number | null;
+    size_final_bytes: number | null;
+    created_on: string | null;
+    modified_on: string | null;
+    category: string | null;
+    description: string | null;
+    s3_url: string | null;
+}
+
 export interface Carrier {
     id: string;
     name: string;
@@ -294,6 +309,14 @@ class ApiClient {
         message: string;
     }> {
         return this.post(`/parse/policy/${policyId}`);
+    }
+
+    async getPolicyFiles(policyId: string): Promise<{
+        success: boolean;
+        count: number;
+        data: PolicyFile[];
+    }> {
+        return this.get(`/policies/${policyId}/files`);
     }
 
     /**

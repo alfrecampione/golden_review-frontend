@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
     ColumnDef,
@@ -97,6 +98,7 @@ export const PoliciesTable = ({
 }: PoliciesTableProps) => {
     const { user: currentUser } = useAuth();
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
 
     const [searchQuery, setSearchQuery] = useState('');
     const [pagination, setPagination] = useState<PaginationState>({
@@ -466,6 +468,7 @@ export const PoliciesTable = ({
             table={table}
             recordCount={filteredPolicies?.length || 0}
             isLoading={isLoading}
+            onRowClick={(row) => navigate(`/audit/policy/${row.policy_id}`)}
             tableLayout={{
                 headerSticky: true,
                 columnsPinnable: true,
