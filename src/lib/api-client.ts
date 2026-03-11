@@ -41,6 +41,22 @@ export interface PolicyFile {
     type: string;
 }
 
+export interface PolicyDetails {
+    policy_id: string;
+    policy_number: string | null;
+    insured_name: string | null;
+    carrier: string | null;
+    effective_date: string | null;
+    exp_date: string | null;
+    binder_date: string | null;
+    premium: number | null;
+    csr: string | null;
+    lob: string | null;
+    business_type: string | null;
+    mga: string | null;
+    status: string | null;
+}
+
 export interface Carrier {
     id: string;
     name: string;
@@ -314,6 +330,13 @@ class ApiClient {
         data: PolicyFile[];
     }> {
         return this.get(`/policies/${policyId}/files`);
+    }
+
+    async getPolicyDetails(policyId: string): Promise<{
+        success: boolean;
+        data: PolicyDetails;
+    }> {
+        return this.get(`/policies/${policyId}/details`);
     }
 
     /**
