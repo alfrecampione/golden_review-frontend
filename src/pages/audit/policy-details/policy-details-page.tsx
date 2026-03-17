@@ -95,16 +95,8 @@ const PolicyDetailsPage = () => {
             <Card className="min-h-[40vh]">
                 <CardHeader className="pb-4">
                     <div className="flex items-center justify-between gap-4">
-                        <CardTitle className="text-2xl">Policy Details</CardTitle>
-                        <div className="flex flex-wrap items-center justify-end gap-2">
-                            {policyStatusLabel && (
-                                <Badge
-                                    variant="outline"
-                                    className={`text-sm px-3 py-1 ${policyStatusStyles[policyStatusLabel] || ''}`}
-                                >
-                                    Policy Status: {policyStatusLabel}
-                                </Badge>
-                            )}
+                        <div className="flex items-center gap-2">
+                            <CardTitle className="text-2xl">Policy Details</CardTitle>
                             {policyInfo?.status && (
                                 <Badge
                                     variant="outline"
@@ -114,6 +106,14 @@ const PolicyDetailsPage = () => {
                                 </Badge>
                             )}
                         </div>
+                        {policyStatusLabel && (
+                            <Badge
+                                variant="outline"
+                                className={`text-sm px-3 py-1 ${policyStatusStyles[policyStatusLabel] || ''}`}
+                            >
+                                Policy Status: {policyStatusLabel}
+                            </Badge>
+                        )}
                     </div>
                 </CardHeader>
 
