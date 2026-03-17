@@ -94,7 +94,7 @@ const PolicyDetailsPage = () => {
             {/* Policy Summary Card — 40% height */}
             <Card className="min-h-[40vh]">
                 <CardHeader className="pb-4">
-                    <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-4 w-full">
                         <div className="flex items-center gap-2">
                             <CardTitle className="text-2xl">Policy Details</CardTitle>
                             {policyInfo?.status && (
