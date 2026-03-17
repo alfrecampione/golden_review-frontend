@@ -111,7 +111,7 @@ const PolicyDetailsPage = () => {
                                 variant="outline"
                                 className={`text-sm px-3 py-1 ${policyStatusStyles[policyStatusLabel] || ''}`}
                             >
-                                Policy Status: {policyStatusLabel}
+                                {policyStatusLabel}
                             </Badge>
                         )}
                     </div>
