@@ -109,7 +109,7 @@ const PolicyDetailsPage = () => {
                         {policyStatusLabel && (
                             <Badge
                                 variant="outline"
-                                className={`text-sm px-3 py-1 ${policyStatusStyles[policyStatusLabel] || ''}`}
+                                className={`text-sm px-3 py-1 ml-auto ${policyStatusStyles[policyStatusLabel] || ''}`}
                             >
                                 {policyStatusLabel}
                             </Badge>
