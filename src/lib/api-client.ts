@@ -32,12 +32,8 @@ export interface Policy {
 export interface PolicyFile {
     file_id: string;
     contact_id: number;
-    file_name_reported: string | null;
-    size_reported: number | null;
-    size_final_bytes: number | null;
     created_on: string | null;
     modified_on: string | null;
-    s3_url: string | null;
     type: string;
 }
 
@@ -55,6 +51,7 @@ export interface PolicyDetails {
     business_type: string | null;
     mga: string | null;
     status: string | null;
+    application_is_processed?: boolean;
 }
 
 export interface Carrier {
@@ -337,6 +334,13 @@ class ApiClient {
         data: PolicyDetails;
     }> {
         return this.get(`/policies/${policyId}/details`);
+    }
+
+    async getFileDownloadUrl(policyId: string, fileId: string): Promise<{
+        success: boolean;
+        url: string;
+    }> {
+        return this.get(`/policies/${policyId}/files/${encodeURIComponent(fileId)}/download`);
     }
 
     /**
