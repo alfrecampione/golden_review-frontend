@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { PolicyJsonEditorDialog } from './policy-json-editor-dialog';
 
 const formatDate = (date: Date | string | null) => {
     if (!date) return '-';
@@ -45,6 +46,8 @@ const policyStatusStyles: Record<string, string> = {
 
 const PolicyDetailsPage = () => {
     const { policyId } = useParams<{ policyId: string }>();
+    const [editorOpen, setEditorOpen] = useState(false);
+    const [editorContactId, setEditorContactId] = useState<number | null>(null);
 
     const { data: policyData, isLoading: policyLoading } = useQuery({
         queryKey: ['policy-details', policyId],
@@ -79,6 +82,12 @@ const PolicyDetailsPage = () => {
         } finally {
             setDownloadingId(null);
         }
+    };
+
+    const handleOpenEditor = (contactId: number | null) => {
+        if (!contactId) return;
+        setEditorContactId(contactId);
+        setEditorOpen(true);
     };
 
     const policyStatusLabel = (() => {
@@ -258,10 +267,11 @@ const PolicyDetailsPage = () => {
                                                             <Button
                                                                 variant="ghost"
                                                                 size="icon"
-                                                                title="Edit (coming soon)"
-                                                                disabled
+                                                                title="Edit temporary JSON"
+                                                                disabled={!file.contact_id}
+                                                                onClick={() => handleOpenEditor(file.contact_id)}
                                                             >
-                                                                <Pencil className="size-4 text-muted-foreground" />
+                                                                <Pencil className={`size-4 ${file.contact_id ? 'text-primary' : 'text-muted-foreground'}`} />
                                                             </Button>
                                                         </div>
                                                     </td>
@@ -279,6 +289,19 @@ const PolicyDetailsPage = () => {
                     </Card>
                 </TabsContent>
             </Tabs>
+
+            {editorContactId && (
+                <PolicyJsonEditorDialog
+                    contactId={editorContactId}
+                    open={editorOpen}
+                    onOpenChange={(open) => {
+                        setEditorOpen(open);
+                        if (!open) {
+                            setEditorContactId(null);
+                        }
+                    }}
+                />
+            )}
         </div>
     );
 };

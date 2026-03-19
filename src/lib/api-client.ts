@@ -31,7 +31,7 @@ export interface Policy {
 
 export interface PolicyFile {
     file_id: string;
-    contact_id: number;
+    contact_id: number | null;
     created_on: string | null;
     modified_on: string | null;
     type: string;
@@ -52,6 +52,17 @@ export interface PolicyDetails {
     mga: string | null;
     status: string | null;
     application_is_processed?: boolean;
+}
+
+export type PolicyTemporaryJsonPrimitive = string | number | boolean | null;
+
+export type PolicyTemporaryJsonValue =
+    | PolicyTemporaryJsonPrimitive
+    | PolicyTemporaryJsonValue[]
+    | { [key: string]: PolicyTemporaryJsonValue };
+
+export interface PolicyTemporaryJson {
+    [key: string]: PolicyTemporaryJsonValue;
 }
 
 export interface Carrier {
@@ -334,6 +345,40 @@ class ApiClient {
         data: PolicyDetails;
     }> {
         return this.get(`/policies/${policyId}/details`);
+    }
+
+    async getPolicyTemporaryJson(policyId: string): Promise<{
+        success: boolean;
+        customerId: number;
+        data: PolicyTemporaryJson;
+    }> {
+        return this.get(`/policies/${policyId}/temporary-json`);
+    }
+
+    async getContactTemporaryJson(contactId: number): Promise<{
+        success: boolean;
+        customerId: number;
+        data: PolicyTemporaryJson;
+    }> {
+        return this.get(`/contacts/${contactId}/temporary-json`);
+    }
+
+    async savePolicyTemporaryJson(policyId: string, data: PolicyTemporaryJson): Promise<{
+        success: boolean;
+        message: string;
+        customerId: number;
+        data: PolicyTemporaryJson;
+    }> {
+        return this.post(`/policies/${policyId}/temporary-json`, { data });
+    }
+
+    async saveContactTemporaryJson(contactId: number, data: PolicyTemporaryJson): Promise<{
+        success: boolean;
+        message: string;
+        customerId: number;
+        data: PolicyTemporaryJson;
+    }> {
+        return this.post(`/contacts/${contactId}/temporary-json`, { data });
     }
 
     async getFileDownloadUrl(policyId: string, fileId: string): Promise<{
