@@ -35,6 +35,7 @@ export interface PolicyFile {
     created_on: string | null;
     modified_on: string | null;
     type: string;
+    type_label?: string;
     carrier?: string | null;
     confidence?: number | null;
 }
