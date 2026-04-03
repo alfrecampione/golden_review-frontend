@@ -35,6 +35,8 @@ export interface PolicyFile {
     created_on: string | null;
     modified_on: string | null;
     type: string;
+    carrier?: string | null;
+    confidence?: number | null;
 }
 
 export interface PolicyDetails {
@@ -347,38 +349,38 @@ class ApiClient {
         return this.get(`/policies/${policyId}/details`);
     }
 
-    async getPolicyTemporaryJson(policyId: string): Promise<{
+    async getPolicyApplicationData(policyId: string): Promise<{
         success: boolean;
         customerId: number;
         data: PolicyTemporaryJson;
     }> {
-        return this.get(`/policies/${policyId}/temporary-json`);
+        return this.get(`/policies/${policyId}/application-data`);
     }
 
-    async getContactTemporaryJson(contactId: number): Promise<{
+    async getContactApplicationData(contactId: number): Promise<{
         success: boolean;
         customerId: number;
         data: PolicyTemporaryJson;
     }> {
-        return this.get(`/contacts/${contactId}/temporary-json`);
+        return this.get(`/contacts/${contactId}/application-data`);
     }
 
-    async savePolicyTemporaryJson(policyId: string, data: PolicyTemporaryJson): Promise<{
+    async savePolicyApplicationData(policyId: string, data: PolicyTemporaryJson): Promise<{
         success: boolean;
         message: string;
         customerId: number;
         data: PolicyTemporaryJson;
     }> {
-        return this.post(`/policies/${policyId}/temporary-json`, { data });
+        return this.post(`/policies/${policyId}/application-data`, { data });
     }
 
-    async saveContactTemporaryJson(contactId: number, data: PolicyTemporaryJson): Promise<{
+    async saveContactApplicationData(contactId: number, data: PolicyTemporaryJson): Promise<{
         success: boolean;
         message: string;
         customerId: number;
         data: PolicyTemporaryJson;
     }> {
-        return this.post(`/contacts/${contactId}/temporary-json`, { data });
+        return this.post(`/contacts/${contactId}/application-data`, { data });
     }
 
     async getFileDownloadUrl(policyId: string, fileId: string): Promise<{

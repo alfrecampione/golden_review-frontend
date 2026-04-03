@@ -264,15 +264,17 @@ const PolicyDetailsPage = () => {
                                                             >
                                                                 <Download className={`size-4 ${downloadingId === file.file_id ? 'animate-pulse text-muted-foreground' : 'text-primary'}`} />
                                                             </Button>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                title="Edit temporary JSON"
-                                                                disabled={!file.contact_id}
-                                                                onClick={() => handleOpenEditor(file.contact_id)}
-                                                            >
-                                                                <Pencil className={`size-4 ${file.contact_id ? 'text-primary' : 'text-muted-foreground'}`} />
-                                                            </Button>
+                                                            {file.type === 'application' && (
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    title="Edit application data"
+                                                                    disabled={!file.contact_id}
+                                                                    onClick={() => handleOpenEditor(file.contact_id)}
+                                                                >
+                                                                    <Pencil className={`size-4 ${file.contact_id ? 'text-primary' : 'text-muted-foreground'}`} />
+                                                                </Button>
+                                                            )}
                                                         </div>
                                                     </td>
                                                 </tr>

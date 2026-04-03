@@ -247,8 +247,8 @@ export function PolicyJsonEditorDialog({
         isFetching,
         error,
     } = useQuery({
-        queryKey: ['policy-temporary-json', contactId],
-        queryFn: () => apiClient.getContactTemporaryJson(contactId!),
+        queryKey: ['contact-application-data', contactId],
+        queryFn: () => apiClient.getContactApplicationData(contactId!),
         enabled: open && Boolean(contactId),
         retry: false,
     });
@@ -260,14 +260,14 @@ export function PolicyJsonEditorDialog({
     }, [open, temporaryJsonResponse]);
 
     const saveMutation = useMutation({
-        mutationFn: (nextJson: PolicyTemporaryJson) => apiClient.saveContactTemporaryJson(contactId!, nextJson),
+        mutationFn: (nextJson: PolicyTemporaryJson) => apiClient.saveContactApplicationData(contactId!, nextJson),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['policy-temporary-json', contactId] });
-            toast.success('Temporary JSON updated successfully');
+            queryClient.invalidateQueries({ queryKey: ['contact-application-data', contactId] });
+            toast.success('Application data updated successfully');
             onOpenChange(false);
         },
         onError: (mutationError) => {
-            const message = mutationError instanceof Error ? mutationError.message : 'Unable to save temporary JSON';
+            const message = mutationError instanceof Error ? mutationError.message : 'Unable to save application data';
             toast.error(message);
         },
     });
@@ -291,24 +291,24 @@ export function PolicyJsonEditorDialog({
 
     const handleSave = () => {
         if (!draftJson) {
-            toast.error('No temporary JSON available to save');
+            toast.error('No application data available to save');
             return;
         }
 
         saveMutation.mutate(draftJson);
     };
 
-    const errorMessage = error instanceof Error ? error.message : 'Unable to load temporary JSON';
+    const errorMessage = error instanceof Error ? error.message : 'Unable to load application data';
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="w-[min(96vw,1100px)] max-w-[1100px] max-h-[88vh] p-0">
                 <DialogHeader className="border-b px-6 py-5 mb-0">
-                    <DialogTitle>Edit Temporary JSON</DialogTitle>
+                    <DialogTitle>Edit Application Data</DialogTitle>
                     <DialogDescription>
                         {contactId
-                            ? `Contact ID ${contactId}. Edit the extracted data and save to overwrite the current temporary JSON.`
-                            : 'Edit the extracted data and save to overwrite the current temporary JSON.'}
+                            ? `Contact ID ${contactId}. Edit the extracted application data and save to update the record.`
+                            : 'Edit the extracted application data and save to update the record.'}
                     </DialogDescription>
                 </DialogHeader>
 
@@ -316,7 +316,7 @@ export function PolicyJsonEditorDialog({
                     {isLoading || isFetching ? (
                         <div className="flex min-h-56 items-center justify-center text-sm text-muted-foreground">
                             <Loader2 className="mr-2 size-4 animate-spin" />
-                            Loading temporary JSON...
+                            Loading application data...
                         </div>
                     ) : error ? (
                         <div className="rounded-xl border border-dashed px-5 py-8 text-sm text-destructive">
@@ -351,7 +351,7 @@ export function PolicyJsonEditorDialog({
                         </div>
                     ) : (
                         <div className="rounded-xl border border-dashed px-5 py-8 text-sm text-muted-foreground">
-                            No temporary JSON found for this policy.
+                            No application data found for this contact.
                         </div>
                     )}
                 </DialogBody>
