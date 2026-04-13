@@ -116,7 +116,7 @@ export const PoliciesTable = ({
     const [auditDialogOpen, setAuditDialogOpen] = useState(false);
     type AuditResult = {
         policy_id: string;
-        success: boolean;
+        status: 'pending' | 'done' | 'error';
         data?: unknown;
         error?: string;
     };
@@ -267,7 +267,7 @@ export const PoliciesTable = ({
             // Inicializar como "procesando"
             setAuditResultsMap(prev => ({
                 ...prev,
-                [policy.policy_id]: { policy_id: policy.policy_id, success: false, data: undefined }
+                [policy.policy_id]: { policy_id: policy.policy_id, status: 'pending' }
             }));
 
             try {
@@ -283,8 +283,8 @@ export const PoliciesTable = ({
                     ...prev,
                     [policy.policy_id]: {
                         policy_id: policy.policy_id,
-                        success: true,
-                        data: responseData
+                        status: 'done',
+                        data: responseData ?? null
                     }
                 }));
             } catch (error) {
@@ -292,7 +292,7 @@ export const PoliciesTable = ({
                     ...prev,
                     [policy.policy_id]: {
                         policy_id: policy.policy_id,
-                        success: false,
+                        status: 'error',
                         error: error instanceof Error ? error.message : 'Unknown error'
                     }
                 }));
@@ -710,10 +710,10 @@ export const PoliciesTable = ({
                                 Object.values(auditResultsMap).map((result) => (
                                     <div key={result.policy_id} className="border rounded-lg p-3">
                                         <div className="font-medium mb-1">Policy ID: {result.policy_id}</div>
-                                        {!result.data && !result.error && !result.success && (
+                                        {result.status === 'pending' && (
                                             <div className="text-muted-foreground">Processing...</div>
                                         )}
-                                        {result.success && result.data != null && (
+                                        {result.status === 'done' && result.data != null && (
                                             <div>
                                                 <span className="text-success">Done</span>
                                                 <pre className="text-xs bg-muted p-2 rounded overflow-x-auto max-h-96" style={{ maxHeight: '24rem', minHeight: '8rem', whiteSpace: 'pre-wrap' }}>
@@ -721,11 +721,11 @@ export const PoliciesTable = ({
                                                 </pre>
                                             </div>
                                         )}
-                                        {result.success && result.data == null && (
-                                            <div className="text-warning text-amber-500">Done — No documents found for this policy</div>
+                                        {result.status === 'done' && result.data == null && (
+                                            <div className="text-amber-500">Done — No documents found for this policy</div>
                                         )}
-                                        {!result.success && result.error && (
-                                            <div className="text-destructive">Error: {result.error}</div>
+                                        {result.status === 'error' && (
+                                            <div className="text-destructive">Error: {result.error || 'Unknown error'}</div>
                                         )}
                                     </div>
                                 ))
