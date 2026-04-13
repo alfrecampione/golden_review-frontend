@@ -13,9 +13,8 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     https: {
-      key: fs.readFileSync(path.resolve(__dirname, 'src/ssl/server.key')),
-      cert: fs.readFileSync(path.resolve(__dirname, 'src/ssl/31e810c645f53345.crt')),
-      ca: fs.readFileSync(path.resolve(__dirname, 'src/ssl/gd_bundle-g2.crt')),
+      key: fs.readFileSync(path.resolve(__dirname, 'src/ssl/cloudflare-origin.key')),
+      cert: fs.readFileSync(path.resolve(__dirname, 'src/ssl/cloudflare-origin.crt'))
     },
     hmr: {
       protocol: 'wss',
