@@ -27,6 +27,7 @@ export interface Policy {
     assigned_user_name?: string | null;
     assigned_user_id?: string | null;
     assigned_user_email?: string | null;
+    producer?: string | null;
 }
 
 export interface PolicyFile {
@@ -54,6 +55,7 @@ export interface PolicyDetails {
     business_type: string | null;
     mga: string | null;
     status: string | null;
+    producer: string | null;
     application_is_processed?: boolean;
 }
 

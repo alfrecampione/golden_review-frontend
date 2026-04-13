@@ -154,7 +154,7 @@ const PolicyDetailsPage = () => {
                             <InfoItem
                                 icon={<User className="size-4 text-primary" />}
                                 label="Producer"
-                                value="-"
+                                value={policyInfo.producer || '-'}
                             />
                             {/* Row 2 */}
                             <InfoItem
