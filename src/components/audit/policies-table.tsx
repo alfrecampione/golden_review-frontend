@@ -118,6 +118,7 @@ export const PoliciesTable = ({
         policy_id: string;
         status: 'pending' | 'done' | 'error';
         data?: unknown;
+        documents?: unknown[];
         error?: string;
     };
     // Usamos un Record para almacenar los resultados por policyId
@@ -274,17 +275,18 @@ export const PoliciesTable = ({
                 const response = await apiClient.parsePolicy(policy.policy_id);
                 console.log(`Audit result for policy ${policy.policy_id}:`, response);
 
-                // Si la respuesta tiene una propiedad 'data' (ej. Axios), úsala; si no, usa la respuesta directamente
-                const responseData = response && typeof response === 'object' && 'data' in response
-                    ? response.data
-                    : response;
+                // Extract application data and documents list from the response
+                const fullResponse = response && typeof response === 'object' ? response as Record<string, unknown> : null;
+                const applicationData = fullResponse && 'data' in fullResponse ? fullResponse.data : response;
+                const documents = fullResponse && 'documents' in fullResponse ? fullResponse.documents as unknown[] : undefined;
 
                 setAuditResultsMap(prev => ({
                     ...prev,
                     [policy.policy_id]: {
                         policy_id: policy.policy_id,
                         status: 'done',
-                        data: responseData ?? null
+                        data: applicationData ?? null,
+                        documents
                     }
                 }));
             } catch (error) {
@@ -721,8 +723,11 @@ export const PoliciesTable = ({
                                                 </pre>
                                             </div>
                                         )}
-                                        {result.status === 'done' && result.data == null && (
+                                        {result.status === 'done' && result.data == null && !result.documents && (
                                             <div className="text-amber-500">Done — No documents found for this policy</div>
+                                        )}
+                                        {result.status === 'done' && result.data == null && result.documents != null && (
+                                            <div className="text-amber-500">Done — No new documents to process for this policy</div>
                                         )}
                                         {result.status === 'error' && (
                                             <div className="text-destructive">Error: {result.error || 'Unknown error'}</div>
